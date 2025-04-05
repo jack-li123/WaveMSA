@@ -7,6 +7,7 @@
 1. In this work, considering the issues of high computational burden and neglecting local image information in traditional Multi-head Self-Attention, we innovatively designed the WaveMSA.
 2. Under a unified development framework, by leveraging wavelet transform, WaveMSA can enhance the representational ability of global and local features while reducing computational complexity. Notably, we conducted an in-depth exploration of how to utilize the high-frequency information of wavelets to further improve the performance of WaveMSA in handling local detail.
 3. In the specific design of WaveMSA, we develop a Wavelet Bottleneck Booster utilizing DWT&IDWT in both 1D and 2D versions for channel and spatial domains, respectively. This approach effectively captures local details across spatial, frequency, and channel domains in a unified framework.
+4. Base on WaveMSA, we develop WaveFormer to achieve a high-efficiency transformer backbone. WaveFormer demonstrates strong performance across various vision applications, including image classification, object detection, and semantic segmentation.
 
 ### Requirement:
 
