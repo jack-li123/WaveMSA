@@ -23,8 +23,7 @@
 
 1. Installation: Plase install requment.txt
 2. Data preparation: Please prepare [ImageNet1K](http://image-net.org/),[COCO](https://cocodataset.org/),[ADE20K](https://groups.csail.mit.edu/vision/datasets/ADE20K/).
-3. Pth: We prepare we train [pth](https://pan.baidu.com/s/1cWIVz19d93rvVYOQwms37Q?pwd=aaaa)
-4. Training:
+3. Training:
 
    ```python
    image classification:
