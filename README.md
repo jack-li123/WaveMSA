@@ -23,7 +23,8 @@
 
 1. Installation: Plase install requment.txt
 2. Data preparation: Please prepare [ImageNet1K](http://image-net.org/),[COCO](https://cocodataset.org/),[ADE20K](https://groups.csail.mit.edu/vision/datasets/ADE20K/).
-3. Training:
+3. Pth: We prepare we train [pth](https://pan.baidu.com/s/1cWIVz19d93rvVYOQwms37Q?pwd=aaaa)
+4. Training:
 
    ```python
    image classification:
@@ -58,7 +59,7 @@
 ```bibtex
 @article{xiangyangli2025wavemsa,
   title={Enhancing Vision Transformers with Wavelet Bottleneck Boosters for Efficient Multi-head Self-Attention},
-  author={Xiangyang Li, Yafeng Li, Ning Li, Pan Fan, Xueya Zhang,Wenbo Zhang},
+  author={Xiangyang Li, Yafeng Li, Ning Li, Pan Fan, Xueya Zhang,Wenbo Zhang,Qian Wang},
   journal={The Visual Computer}
   publisher={Springer}
 }
