@@ -175,9 +175,12 @@ class WaveAttention(nn.Module):
         self.dwt = DWT_2D(wave='haar')
         self.idwt = IDWT_2D(wave='haar')
         self.reduce = nn.Sequential(
-            # WaveConv(),
-            # nn.Conv2d(dim, dim//4, kernel_size=1, padding=0, stride=1),
             ConvBNReLU1x1(dim,dim//4,  padding=0, stride=1),
+            nn.BatchNorm2d(dim//4),
+            nn.ReLU(inplace=True),
+        )
+        self.resume = nn.Sequential(
+            ConvBNReLU1x1(dim//4,dim,  padding=0, stride=1),
             nn.BatchNorm2d(dim//4),
             nn.ReLU(inplace=True),
         )
@@ -192,7 +195,7 @@ class WaveAttention(nn.Module):
             nn.LayerNorm(dim),
             nn.Linear(dim, dim * 2)
         )
-        self.proj = nn.Linear(dim+dim//4, dim)
+        self.proj = nn.Linear(dim+dim, dim)
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
@@ -215,23 +218,23 @@ class WaveAttention(nn.Module):
         q = self.q(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)
 
         x = x.view(B, H, W, C).permute(0, 3, 1, 2)
-        # x_dwt= self.dwt(self.reduce(x))
+       
         temp=self.reduce(x)
         x_dwt=self.dwt(temp)
         x_dwt = self.filter(x_dwt)
 
         x_idwt = self.idwt(x_dwt)
-        x_idwt=temp+x_idwt
+        x_idwt=self.resume(x_idwt)
+        x_idwt=x+x_idwt
         x_idwt = x_idwt.view(B, -1, x_idwt.size(-2) * x_idwt.size(-1)).transpose(1, 2)
 
-        #高低频处理
+      
         num = (x_dwt.shape[1]) // 4
         x_ll, x_lh, x_hl, x_hh = torch.split(x, num, dim=1)
         x_lh=torch.abs(x_lh)+x_ll
         x_hl=torch.abs(x_hl)+x_ll
         x_hh=torch.abs(x_hh)+x_ll
         x_dwt = torch.cat([x_ll, x_lh, x_hl, x_hh], dim=1)
-
 
 
         kv = self.kv_embed(x_dwt).reshape(B, C, -1).permute(0, 2, 1)
