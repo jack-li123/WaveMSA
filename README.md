@@ -199,12 +199,13 @@ class WaveAttention(nn.Module):
         self.sr_ratio = sr_ratio
         self.dwt = DWT_2D(wave='haar')
         self.idwt = IDWT_2D(wave='haar')
-        #WBB
+        #WBB customer ConvBNReLU1x1 base on the 1D wavelet
         self.reduce = nn.Sequential(
             ConvBNReLU1x1(dim,dim//4,  padding=0, stride=1),
             nn.BatchNorm2d(dim//4),
             nn.ReLU(inplace=True),
         )
+        #WBB customer ConvBNReLU1x1 base on the 1D wavelet
         self.resume = nn.Sequential(
             ConvBNReLU1x1(dim//4,dim,  padding=0, stride=1),
             nn.BatchNorm2d(dim//4),
@@ -262,6 +263,25 @@ The WaveMSA module implements a novel attention mechanism combining wavelet tran
 * **Frequency Finer**: Enhances feature representation by incorporating high-frequency components as weights into low-frequency components.
 * **WaveMSA**: Seamlessly integrates WBB and Frequency Finer into the Multi-head Self-Attention (MSA) mechanism, forming a WaveMSA module.
 
+
+## Citation
+
+If you use this work, please acknowledge our manuscript:
+**"Enhancing Vision Transformers with Wavelet Bottleneck Boosters for Efficient Multi-head Self-Attention"**
+Authors: Xiangyang Li, Yafeng Li, Ning Li, Pan Fan, Xueya Zhang, Wenbo Zhang, Qian Wang
+
+Journal: *The Visual Computer*
+Status: With Editor at *The Visual Computer* (2025).
+
+```bibtex
+@article{li2025wavemsa,
+title={Enhancing Vision Transformers with Wavelet Bottleneck Boosters for Efficient Multi-head Self-Attention},
+author={Li, Xiangyang and Li, Yafeng and Li, Ning and Fan, Pan and Zhang, Xueya and Zhang, Wenbo and Wang, Qian},
+journal={The Visual Computer}, 
+year={2025},
+publisher={Springer}}
+```
+
 ## Result
 
 ### Image Classification on ImageNet1k
@@ -278,13 +298,5 @@ The WaveMSA module implements a novel attention mechanism combining wavelet tran
 
 <img src="asset/result4.png" alt="image-20250405171916713" style="zoom:67%;" />
 
-## Citing
 
-```bibtex
-@article{li2025wavemsa,
-title={Enhancing Vision Transformers with Wavelet Bottleneck Boosters for Efficient Multi-head Self-Attention},
-author={Li, Xiangyang and Li, Yafeng and Li, Ning and Fan, Pan and Zhang, Xueya and Zhang, Wenbo and Wang, Qian},
-journal={The Visual Computer}, 
-year={2025},
-publisher={Springer}}
 ```
