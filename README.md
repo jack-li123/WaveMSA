@@ -190,7 +190,7 @@ semantic_sgemention
 The core of WaveMSA.
 
 ```python
-class WaveAttention(nn.Module):
+=class WaveAttention(nn.Module):
     def __init__(self, dim, num_heads, sr_ratio):
         super().__init__()
         self.num_heads = num_heads
@@ -199,18 +199,10 @@ class WaveAttention(nn.Module):
         self.sr_ratio = sr_ratio
         self.dwt = DWT_2D(wave='haar')
         self.idwt = IDWT_2D(wave='haar')
-        #WBB customer ConvBNReLU1x1 base on the 1D wavelet
-        self.reduce = nn.Sequential(
-            ConvBNReLU1x1(dim,dim//4,  padding=0, stride=1),
-            nn.BatchNorm2d(dim//4),
-            nn.ReLU(inplace=True),
-        )
-        #WBB customer ConvBNReLU1x1 base on the 1D wavelet
-        self.resume = nn.Sequential(
-            ConvBNReLU1x1(dim//4,dim,  padding=0, stride=1),
-            nn.BatchNorm2d(dim//4),
-            nn.ReLU(inplace=True),
-        )
+        #WBB customer model base on the 1D wavelet
+        self.reduce = WBB_1D(****)
+        #WBB customer model base on the 1D wavelet
+        self.resume = WBB_1D(****)
         self.filter = nn.Sequential(
             nn.Conv2d(dim, dim, kernel_size=3, padding=1, stride=1, groups=4),
             nn.BatchNorm2d(dim),
@@ -237,12 +229,7 @@ class WaveAttention(nn.Module):
         x_idwt=x+x_idwt
         x_idwt = x_idwt.view(B, -1, x_idwt.size(-2) * x_idwt.size(-1)).transpose(1, 2)
         #Frequency Finer
-        num = (x_dwt.shape[1]) // 4
-        x_ll, x_lh, x_hl, x_hh = torch.split(x, num, dim=1)
-        x_lh=torch.abs(x_lh)+x_ll
-        x_hl=torch.abs(x_hl)+x_ll
-        x_hh=torch.abs(x_hh)+x_ll
-        x_dwt = torch.cat([x_ll, x_lh, x_hl, x_hh], dim=1)
+        x_dwt=Frequency_Finer_model(x_dwt)
         kv = self.kv_embed(x_dwt).reshape(B, C, -1).permute(0, 2, 1)
         kv = self.kv(kv).reshape(B, -1, 2, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
         k, v = kv[0], kv[1]
@@ -263,11 +250,10 @@ The WaveMSA module implements a novel attention mechanism combining wavelet tran
 * **Frequency Finer**: Enhances feature representation by incorporating high-frequency components as weights into low-frequency components.
 * **WaveMSA**: Seamlessly integrates WBB and Frequency Finer into the Multi-head Self-Attention (MSA) mechanism, forming a WaveMSA module.
 
-
 ## Citation
 
 If you use this work, please acknowledge our manuscript:
-**"Enhancing Vision Transformers with Wavelet Bottleneck Boosters for Efficient Multi-head Self-Attention"**
+Title: **"Enhancing Vision Transformers with Wavelet Bottleneck Boosters for Efficient Multi-head Self-Attention"**
 Authors: Xiangyang Li, Yafeng Li, Ning Li, Pan Fan, Xueya Zhang, Wenbo Zhang, Qian Wang
 
 Journal: *The Visual Computer*
@@ -298,5 +284,6 @@ publisher={Springer}}
 
 <img src="asset/result4.png" alt="image-20250405171916713" style="zoom:67%;" />
 
+```
 
 ```
