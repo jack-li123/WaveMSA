@@ -190,15 +190,16 @@ semantic_sgemention
 The core of WaveMSA.
 
 ```python
-=class WaveAttention(nn.Module):
+
+class WaveAttention(nn.Module):
     def __init__(self, dim, num_heads, sr_ratio):
         super().__init__()
         self.num_heads = num_heads
         head_dim = dim // num_heads
         self.scale = head_dim**-0.5
         self.sr_ratio = sr_ratio
-        self.dwt = DWT_2D(wave='haar')
-        self.idwt = IDWT_2D(wave='haar')
+        self.dwt = DWT_2D(****)
+        self.idwt = IDWT_2D(****)
         #WBB customer model base on the 1D wavelet
         self.reduce = WBB_1D(****)
         #WBB customer model base on the 1D wavelet
@@ -221,15 +222,18 @@ The core of WaveMSA.
         B, N, C = x.shape
         q = self.q(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)
         x = x.view(B, H, W, C).permute(0, 3, 1, 2)
-        temp=self.reduce(x)
-        x_dwt=self.dwt(temp)
-        x_dwt = self.filter(x_dwt)
-        x_idwt = self.idwt(x_dwt)
-        x_idwt=self.resume(x_idwt)
+        #WBB model
+        temp=self.reduce(x)#WBB 1D wavelet model
+        x_dwt=self.dwt(temp)#WBB 2D wavelet model
+        x_dwt = self.filter(x_dwt)#WBB 2D wavelet model
+        x_idwt = self.idwt(x_dwt)#WBB 2D wavelet model
+        x_idwt=self.resume(x_idwt)#WBB 1D wavelet model
         x_idwt=x+x_idwt
         x_idwt = x_idwt.view(B, -1, x_idwt.size(-2) * x_idwt.size(-1)).transpose(1, 2)
+
         #Frequency Finer
         x_dwt=Frequency_Finer_model(x_dwt)
+
         kv = self.kv_embed(x_dwt).reshape(B, C, -1).permute(0, 2, 1)
         kv = self.kv(kv).reshape(B, -1, 2, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
         k, v = kv[0], kv[1]
@@ -253,7 +257,7 @@ The WaveMSA module implements a novel attention mechanism combining wavelet tran
 ## Citation
 
 If you use this work, please acknowledge our manuscript:
-Title: **"Enhancing Vision Transformers with Wavelet Bottleneck Boosters for Efficient Multi-head Self-Attention"**
+Title:**"Enhancing Vision Transformers with Wavelet Bottleneck Boosters for Efficient Multi-head Self-Attention"**
 Authors: Xiangyang Li, Yafeng Li, Ning Li, Pan Fan, Xueya Zhang, Wenbo Zhang, Qian Wang
 
 Journal: *The Visual Computer*
